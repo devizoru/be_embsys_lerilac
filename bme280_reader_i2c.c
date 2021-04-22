@@ -1,14 +1,6 @@
 #include "bme280.h"
-struct bme280_dev dev;
-int8_t rslt = BME280_OK;
-uint8_t dev_addr = BME280_I2C_ADDR_PRIM;
-dev.intf_ptr = &dev_addr;
-dev.intf = BME280_I2C_INTF;
-dev.read = user_i2c_read;
-dev.write = user_i2c_write;
-dev.delay_ms = user_delay_ms;
+#include <stdio.h>
 
-rslt = bme280_init(&dev);
 
 int8_t stream_sensor_data_normal_mode(struct bme280_dev *dev)
 {
@@ -28,15 +20,15 @@ int8_t stream_sensor_data_normal_mode(struct bme280_dev *dev)
     settings_sel |= BME280_OSR_HUM_SEL;
     settings_sel |= BME280_STANDBY_SEL;
     settings_sel |= BME280_FILTER_SEL;
-    rslt = bme280_set_sensor_settings(settings_sel, dev);
-    rslt = bme280_set_sensor_mode(BME280_NORMAL_MODE, dev);
+    //rslt = bme280_set_sensor_settings(settings_sel, dev);
+    //rslt = bme280_set_sensor_mode(BME280_NORMAL_MODE, dev);
 
     printf("Temperature, Pressure, Humidity\r\n");
     while (1)
     {
         /* Delay while the sensor completes a measurement */
-        dev->delay_ms(70000, dev->intf_ptr);
-        rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, dev);
+        dev->delay_us(70000, dev->intf_ptr);
+        //rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, dev);
         print_sensor_data(&comp_data);
     }
 
@@ -111,3 +103,24 @@ int8_t user_i2c_write(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *i
 
     return rslt;
 }
+
+int main () {
+struct bme280_dev dev;
+	int8_t rslt = BME280_OK;
+	uint8_t dev_addr = BME280_I2C_ADDR_PRIM;
+	dev.intf_ptr = &dev_addr;
+	dev.intf = BME280_I2C_INTF;
+	dev.read = user_i2c_read;
+	dev.write = user_i2c_write;
+	dev.delay_us = user_delay_ms;
+
+	//rslt = bme280_init(&dev);
+
+
+
+	return 0;
+}
+
+
+
+
