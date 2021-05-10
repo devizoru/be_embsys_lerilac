@@ -1,6 +1,11 @@
 #include "bme280.h"
 #include <stdio.h>
 
+struct identifier 
+{
+    uint8_t dev_addr;
+    int8_t fd;
+};
 
 int8_t stream_sensor_data_normal_mode(struct bme280_dev *dev)
 {
@@ -75,6 +80,11 @@ int8_t user_i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *in
      * | Stop       | -                   |
      * |------------+---------------------|
      */
+    
+    struct identifier id;
+    id = *((struct identifier *)intf_ptr);
+    write(id.fd, &reg_addr, 1);
+    read(id.fd, reg_data, len); 
 
     return rslt;
 }
@@ -106,6 +116,8 @@ int8_t user_i2c_write(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *i
 
 int main () {
 struct bme280_dev dev;
+
+
 	int8_t rslt = BME280_OK;
 	uint8_t dev_addr = BME280_I2C_ADDR_PRIM;
 	dev.intf_ptr = &dev_addr;
@@ -113,6 +125,7 @@ struct bme280_dev dev;
 	dev.read = user_i2c_read;
 	dev.write = user_i2c_write;
 	dev.delay_us = user_delay_ms;
+	stream_sensor_data_normal_mode(&dev);
 
 	//rslt = bme280_init(&dev);
 
